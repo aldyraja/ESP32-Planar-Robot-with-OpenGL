@@ -123,12 +123,16 @@ void save_data()
         exit(1);
     }
 
-    fprintf(fptr, "%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", t, y_cmd, y_res, x_cmd, x_res, (q1 * RTD), (q2 * RTD), dq1 * 150, dq2 * 150);
+    //y_cmd, x_cmd
+    fprintf(fptr, "%.2f,%.4f,%.2f,%.2f,%.4f,%.2f,%.2f,%.2f,%.2f,%.2f,%.2f\n", t, tra_y, y_cmd, y_res, tra_x, x_cmd, x_res, (q1 * RTD), (q2 * RTD), dq1 * 150, dq2 * 150);
     fclose(fptr);
 }
 
 void animate(int k)
-{ 
+{
+    q1 = res_q1;
+    q2 = res_q2;
+
     forward_kinematic(q1, q2, L1, L2);
     trajectory_line(time_traj * (t / time_traj - trunc(t / time_traj)));
     controlX();
