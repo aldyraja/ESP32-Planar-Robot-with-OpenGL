@@ -21,10 +21,7 @@
 #include <sys/time.h>
 #include "planar.c"
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -53,8 +50,7 @@ robot_t data_recv;
 #define ESCkey	27
 
 /* The number/handle of our GLUT window */
-int window, wcam;  
- 
+int window; 
 
 
 /* To draw a quadric model */
@@ -264,16 +260,11 @@ void Sim_main(void)
 
    else {
       if (recv(sockfd, &data_recv, sizeof(data_recv), 0)==sizeof(data_recv)) {
-         access_q1 = data_recv.t1_res;
-         access_q2 = data_recv.t2_res;
-      } 
-      // printf("sukses\n");
+         res_q1 = data_recv.t1_res;
+         res_q2 = data_recv.t2_res;
+      }
    }
 
-   // *tetha1 =(*tetha1 + data_recv.t1_enc / 24 / 2 * 360) * DTR;
-   // *tetha2 =(*tetha2 + data_recv.t2_enc / 24 / 2 * 360) * DTR;
-
-   // save_data(data_recv.t1_enc, data_recv.t2_enc, data_recv.t1_cmd, data_recv.t1_res, data_recv.t1_dot);
    usleep(dt * 1000000);
    count++;
 }
@@ -420,7 +411,7 @@ int main(int argc, char** argv)
    glutInitWindowPosition (40, 100);
 
    /* Open a window */  
-   window = glutCreateWindow ("Simple Window");
+   window = glutCreateWindow ("Aldy Raja - 2006522890");
 
    /* Initialize our window. */
    init() ;

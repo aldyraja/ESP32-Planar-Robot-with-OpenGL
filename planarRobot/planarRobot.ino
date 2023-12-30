@@ -4,7 +4,6 @@
 #include <AsyncElegantOTA.h>
 
 #define M1_ENCA 34 // oldboard(33), newboard(34) 
-// #define M1_ENCA 34 // oldboard(33), newboard(34) 
 #define M1_ENCB 35
 #define M2_ENCA 32 
 #define M2_ENCB 33 // oldboard(34), newboard(33) 
@@ -31,18 +30,12 @@ typedef struct  {
 pc_t    data_recv;
 esp32_t data_send;
 
-IPAddress IP_ap = {192, 168, 1, 1};
 IPAddress gateway_ap = {192, 168, 1, 1};
+IPAddress IP_ap = {192, 168, 1, 1};
 IPAddress NMask_ap = {255, 255, 255, 0};
 
 WiFiUDP udp;
 unsigned int localUdpPort = 4210;  // local port to listen on
-
-
-const int pwm1_channel = 0;
-const int pwm2_channel = 1;
-const int pwm_freq = 50;
-const int pwm_resolution = 8;
 
 volatile int pulse1 = 0;
 volatile int pulse2 = 0;
@@ -50,17 +43,13 @@ volatile int pulse2 = 0;
 AsyncWebServer server(80);
 
 // Parameter Pengendali
-float Kp = 70;
+float Kp = 40;
 float Kv = 1;
 
-float tetha1_act = 0;
-float tetha1_old_act = 0;
 volatile float tetha1_err = 0;
 volatile float tetha1_err_old = 0;
 volatile float dutyCycle1 = 0;
 
-float tetha2_act = 0;
-float tetha2_old_act = 0;
 volatile float tetha2_err = 0;
 volatile float tetha2_err_old = 0;
 volatile float dutyCycle2 = 0;
@@ -70,14 +59,12 @@ float V_2 = 0.1;
 float Vmax = 1000;
 float Vmin = -1000;
 
-short frequency = 50;
-short periode = 3;
 int dt = 0.017;
 
 
 void setupWeb(){
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-     request->send(200, "text/plain", "Sedang dipakai raihan n");
+     request->send(200, "text/plain", "Sedang dipakai Aldy Raja");
   });
   server.onNotFound([](AsyncWebServerRequest *request){
      request->send(404, "text/plain", "Not found");
@@ -125,11 +112,6 @@ void IRAM_ATTR encoder2() {
   }
 }
 
-//void IRAM_ATTR encoder2() {
-// // two times reading
-// pulse2 += digitalRead(M2_ENCA) ? 1 : -1;
-//}
-
 
 void setup() {
   Serial.begin(115200);
@@ -157,12 +139,13 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(M1_ENCB), encoder1, CHANGE);
   attachInterrupt(digitalPinToInterrupt(M2_ENCB), encoder2, CHANGE);
 
+  pinMode(M1_EN, OUTPUT);
+  pinMode(M2_EN, OUTPUT);
+
   pinMode(M1_IN1, OUTPUT);
   pinMode(M1_IN2, OUTPUT);
   pinMode(M2_IN1, OUTPUT);
   pinMode(M2_IN2, OUTPUT);
-  pinMode(M1_EN, OUTPUT);
-  pinMode(M2_EN, OUTPUT);
 }
 
 void loop() {
@@ -249,14 +232,13 @@ void loop() {
     
     // send back a reply, to the IP address and port we got the packet from
     udp.beginPacket(udp.remoteIP(), udp.remotePort());
-    // dummy data should be assigned with real value
+    // assigned with real value
     data_send.t1_res= (pulse1 / 823) * 360;
     data_send.t2_res= (pulse2 / 823) * 360;
     data_send.t1_enc= pulse1;
     data_send.t2_enc= pulse2;
     udp.write((uint8_t *)&data_send, sizeof(data_send));
     udp.endPacket();
-      // below just for debugging, for realtime response better use short delay
   }
   Serial.printf("pulsa1 : %d, pulsa2 : %d\n",(int)pulse1, (int)pulse2);
   delay(100);

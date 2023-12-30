@@ -24,7 +24,7 @@ float integralError_x = 0;
 float integralError_y = 0;
 float u_x = 0;
 float u_y = 0;
-float Kp = 70;
+float Kp = 40;
 float Ki = 40;
 float Kd = 1;
 float K = 1;
@@ -42,8 +42,8 @@ float center_x = 0.15, center_y = 0.3;
 float time_traj = 2.5;
 int linemode = 0;
 
-float access_q1 = 0;
-float access_q2 = 0;
+float res_q1 = 0;
+float res_q2 = 0;
 
 void init_robot()
 {
@@ -85,12 +85,12 @@ void trajectory_line(float t)
         linemode = (linemode == 1) ? 0 : 1;
         if (linemode == 0)
         {
-            x_cmd = x_res - 0.05;
+            x_cmd = x_res - 0.5;
             y_cmd = y_res + 0.2;
         }
         else
         {
-            x_cmd = x_res + 0.05;
+            x_cmd = x_res + 0.5;
             y_cmd = y_res - 0.2;
         }
     }
@@ -116,7 +116,7 @@ void controlY(void)
 
 void save_data()
 {
-    FILE *fptr = fopen("datalog.csv", "a");
+    FILE *fptr = fopen("dataLog.csv", "a");
     if (fptr == NULL)
     {
         printf("Error!");
@@ -129,9 +129,6 @@ void save_data()
 
 void animate(int k)
 { 
-    // q1 = access_q1;
-    // q2 = access_q2;
-
     forward_kinematic(q1, q2, L1, L2);
     trajectory_line(time_traj * (t / time_traj - trunc(t / time_traj)));
     controlX();
